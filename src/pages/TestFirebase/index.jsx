@@ -194,6 +194,7 @@ export default function TestFirebase(props) {
             <br />
             <button onClick={() => history.push('/')}>Principal</button>
             <br />
+            <hr />
             <br />
             <label>Funcionários:</label><br />
             <textarea 
