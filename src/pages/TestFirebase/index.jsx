@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 //import GlobalContext from '../../context/GlobalContext'
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import FirebaseClient from '../../FirebaseClient'
 
 export default function TestFirebase(props) {
@@ -12,6 +12,7 @@ export default function TestFirebase(props) {
     const [Pontuacao, setPotuacao] = useState(null);
     const [UsuarioAutenticado, setUsuarioAutenticado] = useState(null);
     const [Funcionarios, setFuncionarios] = useState(null);
+    const [Languages, setLanguages] = useState(null);
 
     const salvarDados = () => {
         //alert("Salvar Dados");
@@ -62,6 +63,31 @@ export default function TestFirebase(props) {
         )
     }
 
+    const incluirListaPorJson = () => {
+        var languages = firebase.database().ref("languages");
+        const english = languages.child("English");
+        const portuguese = languages.child("Portuguese");
+
+        english.set(
+            {
+                code: "en",
+                english: "English",
+                portuguese: "Portuguese",
+                system: "System",
+                cancel: "Cancel"
+            }
+        );
+        portuguese.set(
+            {
+                code: "pt-BR",
+                english: "Inglês",
+                portuguese: "Português",
+                system: "Sistema",
+                cancel: "Cancelar"
+            }
+        );
+    }
+
     const cadastrarUsuario = () => {
         var email = "curso.firebase@gmail.com";
         var senha = "secret12345";
@@ -88,6 +114,13 @@ export default function TestFirebase(props) {
         })
         funcionarios.on('value', (snapshot) => {
             setFuncionarios(snapshot.val());
+        })
+    }
+
+    const getLanguages = () => {
+        var languages = firebase.database().ref("languages");
+        languages.on('value', (snapshot) => {
+            setLanguages(snapshot.val());
         })
     }
 
@@ -147,6 +180,8 @@ export default function TestFirebase(props) {
             <br />
             <button onClick={() => listarDados()}>Listar Dados</button>
             <br />
+            <button onClick={() => getLanguages()}>Get Languages</button>
+            <br />
             <button onClick={() => cadastrarUsuario()}>Criar Usuário</button>
             <br />
             <button onClick={() => verificarUsuarioAutenticado()}>Verificar Usuário Autenticado</button>
@@ -154,6 +189,8 @@ export default function TestFirebase(props) {
             <button onClick={() => usuarioSair()}>Usuário - Sair</button>
             <br />
             <button onClick={() => autenticarUsuario()}>Usuário - Autenticar</button>
+            <br />
+            <button onClick={() => incluirListaPorJson()}>Gravar Idiomas</button>
             <br />
             <button onClick={() => history.push('/')}>Principal</button>
             <br />
@@ -163,6 +200,14 @@ export default function TestFirebase(props) {
                 style={{ width: '70%', height: '200px' }} 
                 readOnly={true}
                 value={JSON.stringify(Funcionarios, null, 4)} 
+            />
+            <br />
+            <br />
+            <label>Languages:</label><br />
+            <textarea 
+                style={{ width: '70%', height: '200px' }} 
+                readOnly={true}
+                value={JSON.stringify(Languages, null, 4)} 
             />
         </div>
     )
