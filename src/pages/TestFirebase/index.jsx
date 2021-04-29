@@ -13,6 +13,7 @@ export default function TestFirebase(props) {
     const [UsuarioAutenticado, setUsuarioAutenticado] = useState(null);
     const [Funcionarios, setFuncionarios] = useState(null);
     const [Languages, setLanguages] = useState(null);
+    const [Lista, setLista] = useState(null);
 
     const salvarDados = () => {
         //alert("Salvar Dados");
@@ -63,7 +64,7 @@ export default function TestFirebase(props) {
         )
     }
 
-    const incluirListaPorJson = () => {
+    const incluirPorJson = () => {
         var languages = firebase.database().ref("languages");
         const english = languages.child("English");
         const portuguese = languages.child("Portuguese");
@@ -86,6 +87,30 @@ export default function TestFirebase(props) {
                 cancel: "Cancelar"
             }
         );
+
+        const languageName = "Spanish";
+        const newLanguage = languages.child(languageName);
+        newLanguage.set(
+            {
+                code: "es",
+                english: "Inglés",
+                portuguese: "Portugués",
+                system: "Sistema",
+                cancel: "Cancelar"
+            }
+        );
+    }
+
+    const incluirListaPorJson = () => {
+        var lista = firebase.database().ref("lista");
+        const itens = [];
+        for (var i = 0; i < 10; i++) {
+            const id = i;
+            const descricao = `Teste${i.toString()}`;
+            const item = {id, descricao};
+            itens.push(item);
+        }
+        lista.set(itens);
     }
 
     const cadastrarUsuario = () => {
@@ -114,13 +139,21 @@ export default function TestFirebase(props) {
         })
         funcionarios.on('value', (snapshot) => {
             setFuncionarios(snapshot.val());
-        })
+        });
+        getLista();
     }
 
     const getLanguages = () => {
         var languages = firebase.database().ref("languages");
         languages.on('value', (snapshot) => {
             setLanguages(snapshot.val());
+        })
+    }
+
+    const getLista = () => {
+        var lista = firebase.database().ref("lista");
+        lista.on('value', (snapshot) => {
+            setLista(snapshot.val());
         })
     }
 
@@ -190,7 +223,9 @@ export default function TestFirebase(props) {
             <br />
             <button onClick={() => autenticarUsuario()}>Usuário - Autenticar</button>
             <br />
-            <button onClick={() => incluirListaPorJson()}>Gravar Idiomas</button>
+            <button onClick={() => incluirPorJson()}>Gravar Idiomas</button>
+            <br />
+            <button onClick={() => incluirListaPorJson()}>Gravar Lista por Json</button>
             <br />
             <button onClick={() => history.push('/')}>Principal</button>
             <br />
@@ -209,6 +244,14 @@ export default function TestFirebase(props) {
                 style={{ width: '70%', height: '200px' }} 
                 readOnly={true}
                 value={JSON.stringify(Languages, null, 4)} 
+            />
+            <br />
+            <br />
+            <label>Lista:</label><br />
+            <textarea 
+                style={{ width: '70%', height: '200px' }} 
+                readOnly={true}
+                value={JSON.stringify(Lista, null, 4)} 
             />
         </div>
     )
